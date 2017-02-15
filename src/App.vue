@@ -63,12 +63,6 @@
             }, {
               content:'',
               order:'',
-              id:4,
-              thumb: 'http://1.bp.blogspot.com/-jj2JjQaUGj4/VQtBUrWKN-I/AAAAAAAAAOU/lvy54tKUjLM/s320/atletico%2Bmg%2Bfirst.png',
-              local:'/static/b002.html'
-            }, {
-              content:'',
-              order:'',
               id:3,
               thumb: 'http://1.bp.blogspot.com/-jj2JjQaUGj4/VQtBUrWKN-I/AAAAAAAAAOU/lvy54tKUjLM/s320/atletico%2Bmg%2Bfirst.png',
               local:'/static/b003.html'
@@ -162,7 +156,7 @@
           //console.log(frame)
           if(frame.content){
             //console.log(frame.content)
-            $("#iframe"+frame.id).contents().find('#page').html( frame.content )
+            $("#iframe"+frame.id).contents().find('#page').html(frame.content )
           }
         }
 
