@@ -2,6 +2,6 @@
 export default {
 
     ADD_WIDGETS (state, widgets) {
-            state.widgets.push(widgets)
+            state.widgets = widgets
     }
 }

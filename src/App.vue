@@ -13,7 +13,7 @@
                 <div class="right">
                   <h4>List 2 Draggable</h4>
                     <draggable :list="list2"  class="dragArea" @end="onEndSort" @start="onStartSort"  @update="onUpdate" :options="{group:'people'}">
-                      <div v-for="frames in getWidgets">
+                      <div v-for="frames in list2">
                         <iframe class="ifr" width="100%" height="100%" :id="iframeID(frames.id)" v-on:load="loadFrame(frames)" :src="frames.local" frameborder="0"></iframe>
                         <button @click="mantemConteudo(frames)">
                           arrastar
@@ -63,6 +63,12 @@
             }, {
               content:'',
               order:'',
+              id:4,
+              thumb: 'http://1.bp.blogspot.com/-jj2JjQaUGj4/VQtBUrWKN-I/AAAAAAAAAOU/lvy54tKUjLM/s320/atletico%2Bmg%2Bfirst.png',
+              local:'/static/b002.html'
+            }, {
+              content:'',
+              order:'',
               id:3,
               thumb: 'http://1.bp.blogspot.com/-jj2JjQaUGj4/VQtBUrWKN-I/AAAAAAAAAOU/lvy54tKUjLM/s320/atletico%2Bmg%2Bfirst.png',
               local:'/static/b003.html'
@@ -92,6 +98,11 @@
 
              //console.log()
              console.log(iframeContent)
+            //let newContent = "<b> heheh </b>";
+            $("#iframe2").on('load', function(){
+                console.log('carregou')
+                $("#iframe2").contents().find('#page').replaceWith(iframeContent)
+            });
 
         },
         mantemConteudo(frames){
@@ -100,10 +111,10 @@
         },
         onEndSort: function(event){
 
-            console.log('end')
             //$("#iframe2").contents().find('#page').html( "<b> teste ggg </b>" )
             //console.log( $("#iframe2") )
             //console.log('on end')
+
         },
         onUpdate: function(){
 
@@ -127,8 +138,10 @@
           return "iframe"+id
         },
         getIframe( uri ){
+          this.saveWidget(uri)
           //console.log(uri)
-            this.$http.get(uri).then(response => {
+          /*
+      this.$http.get(uri).then(response => {
               //console.log(response.body)
               let widget = {
                 thumb: 'http://1.bp.blogspot.com/-jj2JjQaUGj4/VQtBUrWKN-I/AAAAAAAAAOU/lvy54tKUjLM/s320/atletico%2Bmg%2Bfirst.png',
@@ -137,16 +150,19 @@
                 order:55,
                 id:'45',
               }
-              this.saveWidget(widget)
+
 
             }, response => {
               console.log('ok')
             });
+
+           */
         },
         loadFrame(frame){
           //console.log(frame)
           if(frame.content){
-            $("#iframe"+frame.id).contents().find('#page').html(frame.content )
+            //console.log(frame.content)
+            $("#iframe"+frame.id).contents().find('#page').html( frame.content )
           }
         }
 
@@ -158,12 +174,12 @@
 
         'list2': function (oldval , newVal){
 
-          if(newVal && newVal != oldval){
-            console.log(newVal)
-            let uri = newVal[0].local
-            this.getIframe(uri)
-            return;
-          }
+          console.log(newVal)
+          //if(newVal && newVal != oldval){
+           // let uri = newVal[0].local
+            this.getIframe(newVal)
+          //  return;
+          //}
 
         }
       }
