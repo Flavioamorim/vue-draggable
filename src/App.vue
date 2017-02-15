@@ -71,7 +71,7 @@
         }
       },
       created(){
-        //this.list2 =  this.getWidgets
+        this.list2 =  this.getWidgets
       },
       methods: {
         ...mapActions(['saveWidget']),
@@ -83,15 +83,15 @@
             //let posicaoAnterior = event.oldIndex
             //let posicaoAtual = event.newIndex
 
-            //let iframe = document.getElementById("iframe2")
-            //var iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
-            //var iframeContent;
-            //iframeContent = iframeDocument.getElementById('page').innerHTML;
+            let iframe = document.getElementById("iframe2")
+            var iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+            var iframeContent;
+            iframeContent = iframeDocument.getElementById('page').innerHTML;
             //iframeContent = iframeDocument.querySelectorAll('#page')[0];
             // let content = $("#iframe3").contents().find('#page')
 
              //console.log()
-            // console.log(iframeContent)
+             console.log(iframeContent)
 
         },
         mantemConteudo(frames){
@@ -137,7 +137,6 @@
                 order:55,
                 id:'45',
               }
-              console.log(widget)
               this.saveWidget(widget)
 
             }, response => {
@@ -159,9 +158,13 @@
 
         'list2': function (oldval , newVal){
 
+          if(newVal && newVal != oldval){
             console.log(newVal)
             let uri = newVal[0].local
             this.getIframe(uri)
+            return;
+          }
+
         }
       }
     }
