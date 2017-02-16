@@ -6,15 +6,18 @@
                   <h4>List 1 Draggable</h4>
                     <draggable :list="list" class="dragArea" :options="{group:{ name:'people',  pull:'clone', put:false }}"  @start="onStart" @save="onSave" @end="onEnd"  :move="onMove">
                       <div v-for="(element, index) in list" :key="index">
-                          <img :src="element.thumb" alt="">
+                          <img :id="element.local" :src="element.thumb" alt="">
                       </div>
                     </draggable>
                 </div>
                 <div class="right">
                   <h4>List 2 Draggable</h4>
                     <draggable :list="list2"  class="dragArea" @end="onEndSort" @start="onStartSort"  @update="onUpdate" :options="{group:'people'}">
-                      <div v-for="frames in list2">
-                        <iframe class="ifr" width="100%" height="100%" :id="iframeID(frames.id)" v-on:load="loadFrame(frames)" :src="frames.local" frameborder="0"></iframe>
+                      <div v-for="(frames, index) in list2">
+                        <!-- src=frame.local for load in iframe. -->
+                        <!-- src=loadFrame(frames) for upadte frame with original content -->
+                        <!-- :id="iframeID(frames.id)" -->
+                        <iframe class="ifr" width="100%"  height="100%" :id="iframeID(frames.id)"  v-on:load="loadFrame(frames , index)" :src="frames.local" frameborder="0"></iframe>
                         <button @click="mantemConteudo(frames)">
                           arrastar
                         </button>
@@ -51,51 +54,58 @@
             list: [{
               content:'',
               order:'',
-              id:1,
+              id:"",
               thumb: 'http://1.bp.blogspot.com/-jj2JjQaUGj4/VQtBUrWKN-I/AAAAAAAAAOU/lvy54tKUjLM/s320/atletico%2Bmg%2Bfirst.png',
               local:'/static/b001.html'
             }, {
               content:'',
               order:'',
-              id:2,
+              id:"",
               thumb: 'http://1.bp.blogspot.com/-jj2JjQaUGj4/VQtBUrWKN-I/AAAAAAAAAOU/lvy54tKUjLM/s320/atletico%2Bmg%2Bfirst.png',
               local:'/static/b002.html'
             }, {
               content:'',
               order:'',
-              id:3,
+              id:"",
               thumb: 'http://1.bp.blogspot.com/-jj2JjQaUGj4/VQtBUrWKN-I/AAAAAAAAAOU/lvy54tKUjLM/s320/atletico%2Bmg%2Bfirst.png',
               local:'/static/b003.html'
             }],
-            list2: null
+            list2: this.getWidgets
         }
       },
       created(){
+
+        /* */
+
+        for (var i = 0 ; i < this.getWidgets.length ; i++) {
+            if( ! this.getWidgets[i].id ){
+                var chave = this.makeid()
+                console.log(chave)
+                this.getWidgets[i].id = chave
+                //widgets[i].content = chave
+            }
+        }
+
         this.list2 =  this.getWidgets
       },
       methods: {
         ...mapActions(['saveWidget']),
         onStartSort: function(event){
-            console.log('start')
-            //var iframe = event.item.innerHTML ;
-            //let content = $(iframe).contents().find('#page');
-           // let content = $(event.item.innerHTML).contents()[0]
-            //let posicaoAnterior = event.oldIndex
-            //let posicaoAtual = event.newIndex
 
-            let iframe = document.getElementById("iframe2")
+            var value = event.item.firstChild
+            var iframeID = value.id
+
+            //console.log(iframeID)
+            let iframe = document.getElementById(iframeID)
             var iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
             var iframeContent;
             iframeContent = iframeDocument.getElementById('page').innerHTML;
-            //iframeContent = iframeDocument.querySelectorAll('#page')[0];
-            // let content = $("#iframe3").contents().find('#page')
-
-             //console.log()
-             console.log(iframeContent)
-            //let newContent = "<b> heheh </b>";
-            $("#iframe2").on('load', function(){
-                console.log('carregou')
-                $("#iframe2").contents().find('#page').replaceWith(iframeContent)
+            //console.log(iframeContent)
+            $("#"+iframeID).on('load', function(){
+                //console.log('carregou')
+                var iframeIDX = "#"+iframeID;
+                //console.log(iframeContent)
+                $(iframeIDX).contents().find('#page').replaceWith(iframeContent)
             });
 
         },
@@ -111,10 +121,10 @@
 
         },
         onUpdate: function(){
-
+          console.log('reorder')
         },
         onStart: function(event) {
-            console.log('comecou dragg')
+            //console.log( this.makeid())
             //console.log(event)
         },
         onSave: function(event) {
@@ -122,17 +132,69 @@
             //console.log(event)
         },
         onEnd: function(event) {
-            console.log('terminou de arrastar')
-            //console.log(event)
+
+            var value = event.item.firstChild
+
+
+          this.$http.get(value.id).then(response => {
+
+
+              let widget = {
+                thumb: 'http://1.bp.blogspot.com/-jj2JjQaUGj4/VQtBUrWKN-I/AAAAAAAAAOU/lvy54tKUjLM/s320/atletico%2Bmg%2Bfirst.png',
+                content: response.body,
+                local:value.id,
+                order:55,
+                id:this.makeid(),
+              }
+
+              if (widget.id){
+                this.saveWidget(widget)
+              }
+
+            }, response => {
+              console.log('ok')
+            });
+
+
+
         },
         onMove: function(event) {
             //console.log(event)
         },
         iframeID(id){
-          return "iframe"+id
+          if(id){
+            return id;
+          }
+          return this.makeid()
         },
-        getIframe( uri ){
-          this.saveWidget(uri)
+        getIframe( widgets ){
+
+          //console.log(widgets)
+
+        /*
+   if(widgets){
+            console.log('alterando list')
+            for (var i = 0 ; i < widgets.length ; i++) {
+
+                if( ! widgets[i].id ){
+
+                    var chave = this.makeid()
+                    console.log(chave)
+                    widgets[i].id = chave
+                    //widgets[i].content = chave
+                }
+            }
+            console.log(widgets)
+            this.saveWidget(widgets)
+          }
+
+         */
+
+
+
+
+
+
           //console.log(uri)
           /*
       this.$http.get(uri).then(response => {
@@ -152,12 +214,24 @@
 
            */
         },
-        loadFrame(frame){
+        loadFrame(frame , index){
           //console.log(frame)
           if(frame.content){
             //console.log(frame.content)
-            $("#iframe"+frame.id).contents().find('#page').html(frame.content )
+            //var iframeIDX = "#iframe"+index;
+            var iframeIDX = "#"+ frame.id;
+            //console.log(iframeIDX)
+            $(iframeIDX).contents().find('#page').html(frame.content )
           }
+        },
+        makeid() {
+          var text = "";
+          var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+          for( var i=0; i < 5; i++ ){
+              text += possible.charAt(Math.floor(Math.random() * possible.length));
+          }
+
+          return text;
         }
 
       },
@@ -165,17 +239,18 @@
         ...mapGetters(['getWidgets'])
       },
       watch:{
-
+        /*
         'list2': function (oldval , newVal){
 
-          console.log(newVal)
+           console.log(oldval)
+           console.log(newVal)
           //if(newVal && newVal != oldval){
            // let uri = newVal[0].local
             this.getIframe(newVal)
           //  return;
           //}
 
-        }
+        }*/
       }
     }
     </script>
