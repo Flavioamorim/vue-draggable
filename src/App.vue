@@ -6,18 +6,18 @@
                   <h4>List 1 Draggable</h4>
                     <draggable :list="list" class="dragArea" :options="{group:{ name:'people',  pull:'clone', put:false }}"  @start="onStart" @save="onSave" @end="onEnd"  :move="onMove">
                       <div v-for="(element, index) in list" :key="index">
-                          <img :id="element.local" :src="element.thumb" alt="">
+                          <img :src="element.thumb" alt="">
                       </div>
                     </draggable>
                 </div>
                 <div class="right">
                   <h4>List 2 Draggable</h4>
                     <draggable :list="list2"  class="dragArea" @end="onEndSort" @start="onStartSort"  @update="onUpdate" :options="{group:'people'}">
-                      <div v-for="(frames, index) in list2">
+                      <div v-for="(frames, index) in getWidgets">
                         <!-- src=frame.local for load in iframe. -->
                         <!-- src=loadFrame(frames) for upadte frame with original content -->
                         <!-- :id="iframeID(frames.id)" -->
-                        <iframe class="ifr" width="100%"  height="100%" :id="iframeID(frames.id)"  v-on:load="loadFrame(frames , index)" :src="frames.local" frameborder="0"></iframe>
+                        <iframe class="ifr" width="100%" height="100%" :id="frames.id"  v-on:load="loadFrame(frames , index)" :src="frames.local" frameborder="0"></iframe>
                         <button @click="mantemConteudo(frames)">
                           arrastar
                         </button>
@@ -52,19 +52,19 @@
       data(){
         return {
             list: [{
-              content:'',
+              content:'<!DOCTYPE html><html><head> <title></title></head><body> <div class="page" id="page"> <h2 contenteditable="true">B1B11B1B1B1B1B1B1</h2> </div></body></html>',
               order:'',
               id:"",
               thumb: 'http://1.bp.blogspot.com/-jj2JjQaUGj4/VQtBUrWKN-I/AAAAAAAAAOU/lvy54tKUjLM/s320/atletico%2Bmg%2Bfirst.png',
               local:'/static/b001.html'
             }, {
-              content:'',
+              content:'<!DOCTYPE html><html><head> <title></title></head><body> <div class="page" id="page"> <h2 contenteditable="true">B2B2B2B2B2BB2B2BB2</h2> </div></body></html>',
               order:'',
               id:"",
               thumb: 'http://1.bp.blogspot.com/-jj2JjQaUGj4/VQtBUrWKN-I/AAAAAAAAAOU/lvy54tKUjLM/s320/atletico%2Bmg%2Bfirst.png',
               local:'/static/b002.html'
             }, {
-              content:'',
+              content:'<!DOCTYPE html><html><head> <title></title></head><body> <div class="page" id="page"> <h2 contenteditable="true">B3B3B3B3B3B3B3B3BB</h2> </div></body></html>',
               order:'',
               id:"",
               thumb: 'http://1.bp.blogspot.com/-jj2JjQaUGj4/VQtBUrWKN-I/AAAAAAAAAOU/lvy54tKUjLM/s320/atletico%2Bmg%2Bfirst.png',
@@ -75,17 +75,14 @@
       },
       created(){
 
-        /* */
+        /*
 
-        for (var i = 0 ; i < this.getWidgets.length ; i++) {
-            if( ! this.getWidgets[i].id ){
-                var chave = this.makeid()
-                console.log(chave)
-                this.getWidgets[i].id = chave
-                //widgets[i].content = chave
-            }
+for (var i = 0 ; i < this.getWidgets.length ; i++) {
+            var chave = this.makeid()
+            console.log(chave)
+            this.getWidgets[i].id = chave
         }
-
+         */
         this.list2 =  this.getWidgets
       },
       methods: {
@@ -118,10 +115,9 @@
             //$("#iframe2").contents().find('#page').html( "<b> teste ggg </b>" )
             //console.log( $("#iframe2") )
             //console.log('on end')
-
         },
         onUpdate: function(){
-          console.log('reorder')
+          //console.log('reorder')
         },
         onStart: function(event) {
             //console.log( this.makeid())
@@ -132,47 +128,20 @@
             //console.log(event)
         },
         onEnd: function(event) {
-
-            var value = event.item.firstChild
-
-
-          this.$http.get(value.id).then(response => {
-
-
-              let widget = {
-                thumb: 'http://1.bp.blogspot.com/-jj2JjQaUGj4/VQtBUrWKN-I/AAAAAAAAAOU/lvy54tKUjLM/s320/atletico%2Bmg%2Bfirst.png',
-                content: response.body,
-                local:value.id,
-                order:55,
-                id:this.makeid(),
-              }
-
-              if (widget.id){
-                this.saveWidget(widget)
-              }
-
-            }, response => {
-              console.log('ok')
-            });
-
-
-
+            console.log('terminou de arrastar')
+            //console.log(event)
         },
         onMove: function(event) {
             //console.log(event)
         },
         iframeID(id){
-          if(id){
-            return id;
-          }
-          return this.makeid()
+          return "iframe"+id
         },
         getIframe( widgets ){
 
           //console.log(widgets)
 
-        /*
-   if(widgets){
+           if(widgets){
             console.log('alterando list')
             for (var i = 0 ; i < widgets.length ; i++) {
 
@@ -185,10 +154,8 @@
                 }
             }
             console.log(widgets)
-            this.saveWidget(widgets)
+            //this.saveWidget(widgets)
           }
-
-         */
 
 
 
@@ -197,8 +164,8 @@
 
           //console.log(uri)
           /*
-      this.$http.get(uri).then(response => {
-              //console.log(response.body)
+            this.$http.get(uri).then(response => {
+              console.log(response.body)
               let widget = {
                 thumb: 'http://1.bp.blogspot.com/-jj2JjQaUGj4/VQtBUrWKN-I/AAAAAAAAAOU/lvy54tKUjLM/s320/atletico%2Bmg%2Bfirst.png',
                 content: response.body,
@@ -206,8 +173,6 @@
                 order:55,
                 id:'45',
               }
-
-
             }, response => {
               console.log('ok')
             });
@@ -215,7 +180,8 @@
            */
         },
         loadFrame(frame , index){
-          //console.log(frame)
+          console.log(frame)
+
           if(frame.content){
             //console.log(frame.content)
             //var iframeIDX = "#iframe"+index;
@@ -239,18 +205,18 @@
         ...mapGetters(['getWidgets'])
       },
       watch:{
-        /*
+
         'list2': function (oldval , newVal){
 
-           console.log(oldval)
-           console.log(newVal)
+          // console.log(oldval)
+          // console.log(newVal)
           //if(newVal && newVal != oldval){
            // let uri = newVal[0].local
             this.getIframe(newVal)
           //  return;
           //}
 
-        }*/
+        }
       }
     }
     </script>
